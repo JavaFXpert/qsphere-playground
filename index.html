@@ -15,28 +15,21 @@
   limitations under the License.
 
   TODO:
-    [] Verify whether phase calculations are always correct when state is |1>
-    [] Provide parameterized rotation gates.
-    [] Fix picking issue on back side of sphere
-    [] Document classes and clean up code
-    [] Follow up on Jay's suggestion regarding y button: |+i> and |-i>
-    [] Use min version of babylon.js
-    [] Fix meta element so image will load into GitBook links
-    [] Improve formatting of Pi rotations by justifying text instead of using spaces
-    [] Consider providing capability of sliding "outcome probability" bar to manipulate Bloch sphere state
-    [] Consider labeling the Ry gates |+i> and |-i>
+    []
 -->
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
     <!--meta property="twitter:image" content="https://javafxpert.github.io/grok-bloch/images/bloch-sphere.png"-->
-    <title>v0.12 Grokking the Bloch Sphere</title>
+    <title>v0.01 QSphere playground</title>
     <!--- Link to the last version of BabylonJS --->
     <!-- script src="https://cdn.babylonjs.com/babylon.js"></script -->
     <script src="js/thirdparty/babylon.js"></script>
     <script src="js/thirdparty/babylon.gui.min.js"></script>
     <script src="js/thirdparty/math.min.js"></script>
     <script src="js/qsphere.js"></script>
+    <script src="js/hamming.js"></script>
+    <script src="js/qutil.js"></script>
     <style>
         html, body {
             overflow: hidden;
@@ -71,7 +64,19 @@
             // Create the scene space
             const scene = new BABYLON.Scene(engine);
 
-            qSphere = new QSphere("qSphere", scene, 0, 0);
+            // let stateVector = math.matrix([math.complex(1, 0),
+            //     math.complex(0, 0), math.complex(0, 0), math.complex(0, 0)]);
+            let stateVector = math.matrix([
+                math.complex(1 / math.sqrt(8), 0),
+                math.complex(-1 / math.sqrt(8), 0),
+                math.complex(1 / math.sqrt(8), 0),
+                math.complex(-1 / math.sqrt(8), 0),
+                math.complex(1 / math.sqrt(8), 0),
+                math.complex(-1 / math.sqrt(8), 0),
+                math.complex(1 / math.sqrt(8), 0),
+                math.complex(-1 / math.sqrt(8), 0)
+            ]);
+            let qSphere = new QSphere("qSphere", scene, stateVector);
 
             BABYLON.SceneOptimizer.OptimizeAsync(scene);
 
@@ -92,7 +97,7 @@
                 switch (pointerInfo.type) {
                     case BABYLON.PointerEventTypes.POINTERDOWN:
                         // TODO: Find out how to identify that sphere was picked
-                        if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == blochSphere.sphere) {
+                        if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == qSphere.sphere) {
                             console.log("pickedPoint: " + pointerInfo.pickInfo.pickedPoint);
 
                         }
