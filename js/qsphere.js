@@ -39,35 +39,40 @@ class QSphere extends BABYLON.Mesh {
         this.position.y = 0.0;
         this.sphere.scaling = new BABYLON.Vector3(2.0, 2.0, 2.0);
 
-        const equator = this.createEquator();
-        equator.parent = this.sphere;
-        equator.color = this.latLineColor;
-
-        myMaterial.alpha = 0.4;
+        myMaterial.alpha = 0.3;
 
         this.updateAppearanceWithStateVector(this.quantumStateVector);
     }
 
-    createEquator() {
-        const myPoints = [];
-        const deltaTheta = Math.PI / 20;
-        let theta = 0;
-        const y = 0;
-        for (let i = 0; i<Math.PI * 20; i++) {
-            myPoints.push(new BABYLON.Vector3(this.radius * Math.cos(theta), y, this.radius * Math.sin(theta)));
-            theta += deltaTheta;
-        }
+    createWeightLines(numBits) {
+        for (let weight = 0; weight <= numBits; weight++) {
+            let y = -2 * weight / numBits + 1;
+            let radius = math.sqrt(1 - math.pow(y, 2));
 
-        //Create lines
-        const lines = BABYLON.MeshBuilder.CreateDashedLines("lines", {points: myPoints, updatable: true}, this.scene);
-        lines.isPickable = false;
-        return lines;
+
+            const myPoints = [];
+            const deltaTheta = Math.PI / 20;
+            let theta = 0;
+            for (let i = 0; i<Math.PI * 20; i++) {
+                myPoints.push(new BABYLON.Vector3(radius * Math.cos(theta), y, radius * Math.sin(theta)));
+                theta += deltaTheta;
+            }
+
+            //Create lines
+            const lines = BABYLON.MeshBuilder.CreateDashedLines("lines", {points: myPoints, updatable: true}, this.scene);
+            lines.isPickable = false;
+            lines.parent = this.sphere;
+            lines.color = this.latLineColor;
+        }
     }
 
     updateAppearanceWithStateVector(stateVector) {
         console.log("stateVector: " + stateVector);
         let numStates = stateVector.size();
         let numBits = Math.log2(numStates);
+
+        this.createWeightLines(numBits);
+
         let loc = math.max(math.abs(stateVector));
         console.log("loc: " + loc);
 
@@ -87,7 +92,6 @@ class QSphere extends BABYLON.Mesh {
             let weight = Hamming.calcWeight(stateIndex);
             let zCoord = -2 * weight / numBits + 1;
             console.log("numBits: " + numBits + ", weight: " + weight);
-            // let numDivisions = math.combinations(numBits, weight);
             let numDivisions = math.combinations(numBits, weight);
             let weightOrder = Hamming.weightIndex(stateIndex, numBits);
             let angle = weightOrder * 2 * Math.PI / numDivisions;
@@ -111,11 +115,11 @@ class QSphere extends BABYLON.Mesh {
 
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
                 {diameterX: this.radius * 0.03, diameterY: this.radius * 0.03, diameterZ: this.radius * 0.03}, this.scene);
-            basisStateLineCap.color = Qutil.calcColorForPhase(amplitude);
-            basisStateLine.isPickable = false;
+            basisStateLineCap.isPickable = false;
             basisStateLineCap.parent = this.sphere;
             basisStateLineCap.position = lineEndpoint;
 
+            // TODO: See if we can create only one material per color (instead of for every sphere)
             const mat = new BABYLON.StandardMaterial("mat", this.scene);
             mat.diffuseColor = Qutil.calcColorForPhase(amplitude);
             basisStateLineCap.material = mat;
