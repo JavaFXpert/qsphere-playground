@@ -64,23 +64,68 @@
             // Create the scene space
             const scene = new BABYLON.Scene(engine);
 
-            // let stateVector = math.matrix([
-            //     math.complex(1, 0),
-            //     math.complex(0, 0),
-            //     math.complex(0, 0),
-            //     math.complex(0, 0)
-            // ]);
-            let stateVector = math.matrix([
-                math.complex(1 / math.sqrt(8), 0),
-                math.complex(-1 / math.sqrt(8), 0),
-                math.complex(1 / math.sqrt(8), 0),
-                math.complex(-1 / math.sqrt(8), 0),
-                math.complex(1 / math.sqrt(8), 0),
-                math.complex(-1 / math.sqrt(8), 0),
-                math.complex(1 / math.sqrt(8), 0),
-                math.complex(-1 / math.sqrt(8), 0)
+            let stateVectorBell = math.matrix([
+                math.complex(1 / math.sqrt(2), 0),
+                math.complex(0, 0),
+                math.complex(0, 0),
+                math.complex(1 / math.sqrt(2), 0)
             ]);
-            let qSphere = new QSphere("qSphere", scene, stateVector);
+
+            let stateVectorFourHadamards = math.matrix([
+                math.complex(1 / math.sqrt(16), 0),
+                math.complex(-1 / math.sqrt(16), 0),
+                math.complex(0, 1 / math.sqrt(16)),
+                math.complex(0, -1 / math.sqrt(16)),
+                math.complex(1 / math.sqrt(16), 0),
+                math.complex(-1 / math.sqrt(16), 0),
+                math.complex(0, 1 / math.sqrt(16)),
+                math.complex(0, -1 / math.sqrt(16)),
+                math.complex(1 / math.sqrt(16), 0),
+                math.complex(-1 / math.sqrt(16), 0),
+                math.complex(0, 1 / math.sqrt(16)),
+                math.complex(0, -1 / math.sqrt(16)),
+                math.complex(1 / math.sqrt(16), 0),
+                math.complex(-1 / math.sqrt(16), 0),
+                math.complex(0, 1 / math.sqrt(16)),
+                math.complex(0, -1 / math.sqrt(16)),
+            ]);
+
+            let stateVectorFiveHadamards = math.matrix([
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32)),
+                math.complex(1 / math.sqrt(32), 0),
+                math.complex(-1 / math.sqrt(32), 0),
+                math.complex(0, 1 / math.sqrt(32)),
+                math.complex(0, -1 / math.sqrt(32))
+            ]);
+
+            qSphere = new QSphere("qSphere", scene, stateVectorBell);
 
             BABYLON.SceneOptimizer.OptimizeAsync(scene);
 
@@ -108,6 +153,39 @@
                         break;
                 }
             });
+
+            /// Temporary panel for choosing examples
+            const setExample = function(but) {
+                switch(but) {
+                    case 0:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorBell);
+                        break
+                    case 1:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorFourHadamards);
+                        break
+                    case 2:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorFiveHadamards);
+                        break
+                }
+            }
+
+            const selectBox = new BABYLON.GUI.SelectionPanel("sp");
+            selectBox.width = 0.25;
+            selectBox.height = 0.20;
+            selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+
+            advancedTexture.addControl(selectBox);
+
+            const exampleGroup = new BABYLON.GUI.RadioGroup("Examples");
+            exampleGroup.addRadio("A Bell state", setExample, true);
+            exampleGroup.addRadio("Four Hadamards", setExample);
+            exampleGroup.addRadio("Five Hadamards", setExample);
+
+            selectBox.addGroup(exampleGroup);
 
             // return the created scene
             return scene;
