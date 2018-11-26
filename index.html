@@ -90,41 +90,28 @@
                 math.complex(0, -1 / math.sqrt(16)),
             ]);
 
-            let stateVectorFiveHadamards = math.matrix([
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32)),
-                math.complex(1 / math.sqrt(32), 0),
-                math.complex(-1 / math.sqrt(32), 0),
-                math.complex(0, 1 / math.sqrt(32)),
-                math.complex(0, -1 / math.sqrt(32))
-            ]);
 
+            ///// Grover
+            const stateVectorGroverArray = [];
+            const numBasisStatesGrover = 32;
+
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStatesGrover; basisStateIdx++) {
+                if (basisStateIdx == 27) {
+                    stateVectorGroverArray.push(math.complex(0.94707, 0));
+                }
+                else {
+                    if (basisStateIdx %2 == 0) {
+                        stateVectorGroverArray.push(math.complex(0.05766, 0));
+                    }
+                    else {
+                        stateVectorGroverArray.push(math.complex(-0.05766, 0));
+                    }
+                }
+            }
+            const stateVectorGroverMatrix = math.matrix(stateVectorGroverArray);
+
+
+            ////// 10 qubits
             const stateVectorMeasuredArray = [];
             const numBasisStates = 1024;
 
@@ -180,7 +167,7 @@
                         break
                     case 2:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorFiveHadamards);
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix);
                         break
                     case 3:
                         qSphere.sphere.dispose();
@@ -199,8 +186,8 @@
 
             const exampleGroup = new BABYLON.GUI.RadioGroup("Examples");
             exampleGroup.addRadio("A Bell state", setExample, true);
-            exampleGroup.addRadio("Four Hadamards", setExample);
-            exampleGroup.addRadio("Five Hadamards", setExample);
+            exampleGroup.addRadio("Four Phased Hadamards", setExample);
+            exampleGroup.addRadio("Grover 3rd amp", setExample);
             exampleGroup.addRadio("Ten Qubits Measured", setExample);
 
             selectBox.addGroup(exampleGroup);

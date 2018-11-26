@@ -39,7 +39,7 @@ class QSphere extends BABYLON.Mesh {
         this.position.y = 0.0;
         this.sphere.scaling = new BABYLON.Vector3(1.8, 1.8, 1.8);
 
-        myMaterial.alpha = 0.15;
+        myMaterial.alpha = 0.18;
 
         this.updateAppearanceWithStateVector(this.quantumStateVector);
     }
@@ -105,7 +105,7 @@ class QSphere extends BABYLON.Mesh {
             let yCoord = math.sqrt(1 - math.pow(zCoord, 2)) * math.sin(angle);
             let amplitude = math.subset(stateVector, math.index(stateIndex));
             let probability = math.multiply(amplitude, math.conj(amplitude));
-            console.log("stateIndex: " + stateIndex + ", amplitude: " + amplitude + ", probability: " + probability);
+            // console.log("stateIndex: " + stateIndex + ", amplitude: " + amplitude + ", probability: " + probability);
 
             const lineEndpoint = new BABYLON.Vector3(yCoord, zCoord, -xCoord);
             const basisStatePoints = [
@@ -123,9 +123,10 @@ class QSphere extends BABYLON.Mesh {
                 alphaVal = 0;
             }
             else {
-                alphaVal = probability * 0.5 + 0.5;
+                alphaVal = probability * 0.85 + 0.15;
+                // alphaVal = probability * 1.0 + 0.0;
             }
-            alphaVal = math.min(alphaVal, 1.0);
+            if (alphaVal > 1.0) alphaVal = 1.0;
             basisStateLine.alpha = alphaVal;
 
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
