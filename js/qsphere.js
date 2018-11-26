@@ -119,7 +119,7 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.parent = this.sphere;
 
             let alphaVal = 1;
-            if (probability < .0001) {
+            if (probability < .00000001) {
                 alphaVal = 0;
             }
             else {
