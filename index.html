@@ -91,9 +91,40 @@
             ]);
 
 
-            ///// Grover 2rd amp
+            ///// Grover beginning state
             let stateVectorGroverArray = [];
             let numBasisStatesGrover = 32;
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStatesGrover; basisStateIdx++) {
+                if (basisStateIdx %2 == 0) {
+                    stateVectorGroverArray.push(math.complex(0.17678, 0));
+                }
+                else {
+                    stateVectorGroverArray.push(math.complex(-0.17678, 0));
+                }
+            }
+            const stateVectorGroverMatrix0 = math.matrix(stateVectorGroverArray);
+
+            ///// Grover 1st amp
+            stateVectorGroverArray = [];
+            numBasisStatesGrover = 32;
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStatesGrover; basisStateIdx++) {
+                if (basisStateIdx == 27) {
+                    stateVectorGroverArray.push(math.complex(0.50823, 0));
+                }
+                else {
+                    if (basisStateIdx %2 == 0) {
+                        stateVectorGroverArray.push(math.complex(0.15468, 0));
+                    }
+                    else {
+                        stateVectorGroverArray.push(math.complex(-0.15468, 0));
+                    }
+                }
+            }
+            const stateVectorGroverMatrix1 = math.matrix(stateVectorGroverArray);
+
+            ///// Grover 2nd amp
+            stateVectorGroverArray = [];
+            numBasisStatesGrover = 32;
             for (let basisStateIdx = 0; basisStateIdx < numBasisStatesGrover; basisStateIdx++) {
                 if (basisStateIdx == 27) {
                     stateVectorGroverArray.push(math.complex(0.77616, 0));
@@ -203,17 +234,25 @@
                         break
                     case 2:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix2);
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix0);
                         break
                     case 3:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix3);
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix1);
                         break
                     case 4:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix4);
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix2);
                         break
                     case 5:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix3);
+                        break
+                    case 6:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix4);
+                        break
+                    case 7:
                         qSphere.sphere.dispose();
                         qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix);
                         break
@@ -222,7 +261,7 @@
 
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
-            selectBox.height = 0.33;
+            selectBox.height = 0.40;
             selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
@@ -231,9 +270,11 @@
             const exampleGroup = new BABYLON.GUI.RadioGroup("Examples");
             exampleGroup.addRadio("A Bell state", setExample, true);
             exampleGroup.addRadio("Four qb equal superpos", setExample);
-            exampleGroup.addRadio("Five qb Grover 2nd amp", setExample);
-            exampleGroup.addRadio("Five qb Grover 3rd amp", setExample);
-            exampleGroup.addRadio("Five qb Grover 4th amp", setExample);
+            exampleGroup.addRadio("Grover: init state", setExample);
+            exampleGroup.addRadio("Grover: 1st amp", setExample);
+            exampleGroup.addRadio("Grover: 2nd amp", setExample);
+            exampleGroup.addRadio("Grover: 3rd amp", setExample);
+            exampleGroup.addRadio("Grover: 4th amp", setExample);
             exampleGroup.addRadio("Ten qubits measured", setExample);
 
             selectBox.addGroup(exampleGroup);
