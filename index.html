@@ -125,6 +125,19 @@
                 math.complex(0, -1 / math.sqrt(32))
             ]);
 
+            const stateVectorMeasuredArray = [];
+            const numBasisStates = 1024;
+
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStates; basisStateIdx++) {
+                if (basisStateIdx == 42) {
+                    stateVectorMeasuredArray.push(math.complex(1, 0));
+                }
+                else {
+                    stateVectorMeasuredArray.push(math.complex(0, 0));
+                }
+            }
+            const stateVectorMeasuredMatrix = math.matrix(stateVectorMeasuredArray);
+
             qSphere = new QSphere("qSphere", scene, stateVectorBell);
 
             BABYLON.SceneOptimizer.OptimizeAsync(scene);
@@ -147,7 +160,7 @@
                     case BABYLON.PointerEventTypes.POINTERDOWN:
                         // TODO: Find out how to identify that sphere was picked
                         if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == qSphere.sphere) {
-                            console.log("pickedPoint: " + pointerInfo.pickInfo.pickedPoint);
+                            //console.log("pickedPoint: " + pointerInfo.pickInfo.pickedPoint);
 
                         }
                         break;
@@ -169,12 +182,16 @@
                         qSphere.sphere.dispose();
                         qSphere = new QSphere("qSphere", scene, stateVectorFiveHadamards);
                         break
+                    case 3:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix);
+                        break
                 }
             }
 
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
-            selectBox.height = 0.20;
+            selectBox.height = 0.27;
             selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
@@ -184,6 +201,7 @@
             exampleGroup.addRadio("A Bell state", setExample, true);
             exampleGroup.addRadio("Four Hadamards", setExample);
             exampleGroup.addRadio("Five Hadamards", setExample);
+            exampleGroup.addRadio("Ten Qubits Measured", setExample);
 
             selectBox.addGroup(exampleGroup);
 

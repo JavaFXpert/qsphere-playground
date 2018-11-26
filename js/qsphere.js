@@ -66,7 +66,7 @@ class QSphere extends BABYLON.Mesh {
         }
 
         const centerPoint = BABYLON.MeshBuilder.CreateSphere("centerPoint",
-            {diameterX: this.radius * 0.03, diameterY: this.radius * 0.03, diameterZ: this.radius * 0.03}, this.scene);
+            {diameterX: this.radius * 0.025, diameterY: this.radius * 0.025, diameterZ: this.radius * 0.025}, this.scene);
         centerPoint.isPickable = false;
         centerPoint.parent = this.sphere;
         centerPoint.position = new BABYLON.Vector3(0, 0, 0);
@@ -74,16 +74,17 @@ class QSphere extends BABYLON.Mesh {
     }
 
     updateAppearanceWithStateVector(stateVector) {
-        console.log("stateVector: " + stateVector);
         let numStates = stateVector.size();
         let numBits = Math.log2(numStates);
 
+        if (numBits != math.floor(numBits)) {
+            console.log("Invalid statevector size: " + numStates);
+        }
+
         this.createWeightLinesAndCenterPoint(numBits);
 
-        let loc = math.max(math.abs(stateVector));
-        console.log("loc: " + loc);
-
         // Remove the global phase TODO: Implement
+        let loc = math.max(math.abs(stateVector));
         // let angles = (np.angle(state_vec[loc]) + 2 * Math.PI) % (2 * Math.PI)
         // angleset = np.exp(-1j*angles)
         // print(state_vec)
@@ -92,22 +93,19 @@ class QSphere extends BABYLON.Mesh {
         // print(state_vec)
         // state_vec.flatten()
 
-        console.log("numStates: " + numStates);
+        // console.log("numStates: " + numStates);
         for (let stateIndex = 0; stateIndex < numStates; stateIndex++) {
-            console.log("stateIndex: " + stateIndex +
-                ", math.subset(stateVector, math.index(stateIndex)): " + math.subset(stateVector, math.index(stateIndex)));
             let weight = Hamming.calcWeight(stateIndex);
             let zCoord = -2 * weight / numBits + 1;
-            console.log("numBits: " + numBits + ", weight: " + weight);
+            // console.log("numBits: " + numBits + ", weight: " + weight);
             let numDivisions = math.combinations(numBits, weight);
             let weightOrder = Hamming.weightIndex(stateIndex, numBits);
             let angle = weightOrder * 2 * Math.PI / numDivisions;
             let xCoord = math.sqrt(1 - math.pow(zCoord, 2)) * math.cos(angle);
             let yCoord = math.sqrt(1 - math.pow(zCoord, 2)) * math.sin(angle);
-            console.log("xCoord: " + xCoord + ", yCoord: " + yCoord + ", zCoord: " + zCoord);
             let amplitude = math.subset(stateVector, math.index(stateIndex));
             let probability = amplitude * math.conj(amplitude);
-            console.log("amplitude: " + amplitude + ", probability: " + probability);
+            // console.log("amplitude: " + amplitude + ", probability: " + probability);
 
             const lineEndpoint = new BABYLON.Vector3(yCoord, zCoord, -xCoord);
             const basisStatePoints = [
@@ -122,7 +120,7 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.alpha = math.sqrt(probability);
 
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
-                {diameterX: this.radius * 0.03, diameterY: this.radius * 0.03, diameterZ: this.radius * 0.03}, this.scene);
+                {diameterX: this.radius * 0.025, diameterY: this.radius * 0.025, diameterZ: this.radius * 0.025}, this.scene);
             basisStateLineCap.isPickable = false;
             basisStateLineCap.parent = this.sphere;
             basisStateLineCap.position = lineEndpoint;

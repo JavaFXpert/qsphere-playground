@@ -22,7 +22,6 @@ class Qutil {
      */
     static calcColorForPhase(complexNum) {
         let angle = complexNum.toPolar().phi;
-        console.log("angle: " + angle);
         let angleRound = math.floor(((angle + 2 * Math.PI) % (2 * Math.PI))/Math.PI*6);
         let color = new BABYLON.Color3(.3, .3, .3);
         switch(angleRound) {
