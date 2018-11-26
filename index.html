@@ -178,6 +178,20 @@
             const stateVectorGroverMatrix4 = math.matrix(stateVectorGroverArray);
 
 
+            ///// Grover measured
+            stateVectorGroverArray = [];
+            numBasisStatesGrover = 32;
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStatesGrover; basisStateIdx++) {
+                if (basisStateIdx == 27) {
+                    stateVectorGroverArray.push(math.complex(1.0, 0));
+                }
+                else {
+                    stateVectorGroverArray.push(math.complex(0.0, 0));
+                }
+            }
+            const stateVectorGroverMatrix5 = math.matrix(stateVectorGroverArray);
+
+
             ////// 10 qubits
             const stateVectorMeasuredArray = [];
             const numBasisStates = 1024;
@@ -254,6 +268,10 @@
                         break
                     case 7:
                         qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix5);
+                        break
+                    case 8:
+                        qSphere.sphere.dispose();
                         qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix);
                         break
                 }
@@ -261,7 +279,7 @@
 
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
-            selectBox.height = 0.40;
+            selectBox.height = 0.43;
             selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
@@ -275,6 +293,7 @@
             exampleGroup.addRadio("Grover: 2nd amp", setExample);
             exampleGroup.addRadio("Grover: 3rd amp", setExample);
             exampleGroup.addRadio("Grover: 4th amp", setExample);
+            exampleGroup.addRadio("Grover: measured", setExample);
             exampleGroup.addRadio("Ten qubits measured", setExample);
 
             selectBox.addGroup(exampleGroup);
