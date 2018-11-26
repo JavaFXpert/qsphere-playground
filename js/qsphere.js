@@ -37,7 +37,7 @@ class QSphere extends BABYLON.Mesh {
         const myMaterial = new BABYLON.StandardMaterial("myMaterial", this.scene);
         this.sphere.material = myMaterial;
         this.position.y = 0.0;
-        this.sphere.scaling = new BABYLON.Vector3(2, 2, 2);
+        this.sphere.scaling = new BABYLON.Vector3(1.8, 1.8, 1.8);
 
         myMaterial.alpha = 0.2;
 
