@@ -104,8 +104,8 @@ class QSphere extends BABYLON.Mesh {
             let xCoord = math.sqrt(1 - math.pow(zCoord, 2)) * math.cos(angle);
             let yCoord = math.sqrt(1 - math.pow(zCoord, 2)) * math.sin(angle);
             let amplitude = math.subset(stateVector, math.index(stateIndex));
-            let probability = amplitude * math.conj(amplitude);
-            // console.log("amplitude: " + amplitude + ", probability: " + probability);
+            let probability = math.multiply(amplitude, math.conj(amplitude));
+            console.log("stateIndex: " + stateIndex + ", amplitude: " + amplitude + ", probability: " + probability);
 
             const lineEndpoint = new BABYLON.Vector3(yCoord, zCoord, -xCoord);
             const basisStatePoints = [
