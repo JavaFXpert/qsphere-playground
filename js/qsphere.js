@@ -117,7 +117,16 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.color = Qutil.calcColorForPhase(amplitude);
             basisStateLine.isPickable = false;
             basisStateLine.parent = this.sphere;
-            basisStateLine.alpha = math.sqrt(probability);
+
+            let alphaVal = 1;
+            if (probability < .0001) {
+                alphaVal = 0;
+            }
+            else {
+                alphaVal = probability * 0.5 + 0.5;
+            }
+            alphaVal = math.min(alphaVal, 1.0);
+            basisStateLine.alpha = alphaVal;
 
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
                 {diameterX: this.radius * 0.025, diameterY: this.radius * 0.025, diameterZ: this.radius * 0.025}, this.scene);
