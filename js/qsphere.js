@@ -44,7 +44,7 @@ class QSphere extends BABYLON.Mesh {
         this.updateAppearanceWithStateVector(this.quantumStateVector);
     }
 
-    createWeightLines(numBits) {
+    createWeightLinesAndCenterPoint(numBits) {
         for (let weight = 0; weight <= numBits; weight++) {
             let y = -2 * weight / numBits + 1;
             let radius = math.sqrt(1 - math.pow(y, 2));
@@ -64,6 +64,13 @@ class QSphere extends BABYLON.Mesh {
             lines.parent = this.sphere;
             lines.color = this.latLineColor;
         }
+
+        const centerPoint = BABYLON.MeshBuilder.CreateSphere("centerPoint",
+            {diameterX: this.radius * 0.03, diameterY: this.radius * 0.03, diameterZ: this.radius * 0.03}, this.scene);
+        centerPoint.isPickable = false;
+        centerPoint.parent = this.sphere;
+        centerPoint.position = new BABYLON.Vector3(0, 0, 0);
+
     }
 
     updateAppearanceWithStateVector(stateVector) {
@@ -71,7 +78,7 @@ class QSphere extends BABYLON.Mesh {
         let numStates = stateVector.size();
         let numBits = Math.log2(numStates);
 
-        this.createWeightLines(numBits);
+        this.createWeightLinesAndCenterPoint(numBits);
 
         let loc = math.max(math.abs(stateVector));
         console.log("loc: " + loc);
@@ -112,6 +119,7 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.color = Qutil.calcColorForPhase(amplitude);
             basisStateLine.isPickable = false;
             basisStateLine.parent = this.sphere;
+            basisStateLine.alpha = math.sqrt(probability);
 
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
                 {diameterX: this.radius * 0.03, diameterY: this.radius * 0.03, diameterZ: this.radius * 0.03}, this.scene);
