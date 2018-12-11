@@ -50,6 +50,8 @@
 <canvas id="renderCanvas"></canvas>
 <script>
     window.addEventListener('DOMContentLoaded', function(){
+        let thisEndpointShapeType = 0;
+        let thisCurrentVector = null;
 
         let qSphere = null;
 
@@ -65,10 +67,10 @@
             const scene = new BABYLON.Scene(engine);
 
             let stateVectorBell = math.matrix([
+                math.complex(0, 0),
                 math.complex(1 / math.sqrt(2), 0),
-                math.complex(0, 0),
-                math.complex(0, 0),
-                math.complex(1 / math.sqrt(2), 0)
+                math.complex(-1 / math.sqrt(2), 0),
+                math.complex(0, 0)
             ]);
 
             let stateVectorFourHadamards = math.matrix([
@@ -234,7 +236,7 @@
             const stateVectorMatrixQft = math.matrix(stateVectorQftArray);
 
 
-            qSphere = new QSphere("qSphere", scene, stateVectorBell);
+            qSphere = new QSphere("qSphere", scene, stateVectorBell, 0);
 
             BABYLON.SceneOptimizer.OptimizeAsync(scene);
 
@@ -268,54 +270,71 @@
                 switch(but) {
                     case 0:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorBell);
+                        thisCurrentVector = stateVectorBell;
+                        qSphere = new QSphere("qSphere", scene, stateVectorBell, thisEndpointShapeType);
                         break
                     case 1:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorFourHadamards);
+                        thisCurrentVector = stateVectorFourHadamards;
+                        qSphere = new QSphere("qSphere", scene, stateVectorFourHadamards, thisEndpointShapeType);
                         break
                     case 2:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix0);
+                        thisCurrentVector = stateVectorGroverMatrix0;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix0, thisEndpointShapeType);
                         break
                     case 3:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix1);
+                        thisCurrentVector = stateVectorGroverMatrix1;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix1, thisEndpointShapeType);
                         break
                     case 4:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix2);
+                        thisCurrentVector = stateVectorGroverMatrix2;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix2, thisEndpointShapeType);
                         break
                     case 5:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix3);
+                        thisCurrentVector = stateVectorGroverMatrix3;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix3, thisEndpointShapeType);
                         break
                     case 6:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix4);
+                        thisCurrentVector = stateVectorGroverMatrix4;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix4, thisEndpointShapeType);
                         break
                     case 7:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix5);
+                        thisCurrentVector = stateVectorGroverMatrix5;
+                        qSphere = new QSphere("qSphere", scene, stateVectorGroverMatrix5, thisEndpointShapeType);
                         break
                     case 8:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorMatrix10qbEq);
+                        thisCurrentVector = stateVectorMatrix10qbEq;
+                        qSphere = new QSphere("qSphere", scene, stateVectorMatrix10qbEq, thisEndpointShapeType);
                         break
                     case 9:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix);
+                        thisCurrentVector = stateVectorMeasuredMatrix;
+                        qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix, thisEndpointShapeType);
                         break
                     case 10:
                         qSphere.sphere.dispose();
-                        qSphere = new QSphere("qSphere", scene, stateVectorMatrixQft);
+                        thisCurrentVector = stateVectorMatrixQft;
+                        qSphere = new QSphere("qSphere", scene, stateVectorMatrixQft, thisEndpointShapeType);
                         break
                 }
             }
 
+            const setEndpointShapeType = function(endpointShapeType) {
+                thisEndpointShapeType = endpointShapeType;
+                qSphere.sphere.dispose();
+                qSphere = new QSphere("qSphere", scene, thisCurrentVector, thisEndpointShapeType);
+            }
+
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
-            selectBox.height = 0.53;
+            selectBox.height = 0.70;
             selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
@@ -335,6 +354,12 @@
             exampleGroup.addRadio("Seven qubits QFT", setExample);
 
             selectBox.addGroup(exampleGroup);
+
+            const optionsGroup = new BABYLON.GUI.RadioGroup("Options");
+            optionsGroup.addRadio("Spheres", setEndpointShapeType, true);
+            optionsGroup.addRadio("Cones", setEndpointShapeType);
+
+            selectBox.addGroup(optionsGroup);
 
             // return the created scene
             return scene;

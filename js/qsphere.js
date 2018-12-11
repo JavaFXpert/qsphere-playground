@@ -18,17 +18,19 @@
     [] Use math.combinations(n, k) for binomial coefficient
  */
 class QSphere extends BABYLON.Mesh {
-    constructor(name, scene, quantumStateVector) {
+    constructor(name, scene, quantumStateVector, endpointShapeType) {
         super(name, scene);
         this.quantumStateVector = quantumStateVector;
         this.radius = 1;
-        this.scene = scene; 99
+        this.scene = scene;
+        //this.gui3dManager = new BABYLON.GUI.GUI3DManager(scene);
         this.sphere = BABYLON.MeshBuilder.CreateSphere("qsphere", {
             diameterX: this.radius * 2,
             diameterY: this.radius * 2,
             diameterZ: this.radius * 2},
             scene);
         this.latLineColor = new BABYLON.Color3(.3, .3, .3);
+        this.endpointShapeType = endpointShapeType;
         this.setupSphere();
     }
 
@@ -63,6 +65,7 @@ class QSphere extends BABYLON.Mesh {
             lines.isPickable = false;
             lines.parent = this.sphere;
             lines.color = this.latLineColor;
+            lines.alpha = 0.3;
         }
 
         const centerPoint = BABYLON.MeshBuilder.CreateSphere("centerPoint",
@@ -125,14 +128,66 @@ class QSphere extends BABYLON.Mesh {
             if (diam < 0.15) {
                 diam = 0.15;
             }
-            const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
-            {diameterX: diam * 0.07, // * this.radius * 0.25,
-                diameterY: diam * 0.07, // * this.radius * 0.25,
-                diameterZ: diam * 0.07}, // * this.radius * 0.25},
-            this.scene);
+
+            let basisStateLineCap = null;
+
+            if (probability < 0.000001) {
+                // TODO: Make these black dots?
+                basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
+                    {
+                        diameterX: diam * 0.07, // * this.radius * 0.25,
+                        diameterY: diam * 0.07, // * this.radius * 0.25,
+                        diameterZ: diam * 0.07
+                    },
+                    this.scene);
+            }
+            /// Experiment with using cone for line cap
+            else {
+                if (this.endpointShapeType == 1) {
+                    basisStateLineCap = BABYLON.MeshBuilder.CreateCylinder("quantumStateLineCap",
+                        {
+                            height: diam * 0.28,
+                            diameterTop: 0.0,
+                            diameterBottom: diam * 0.04,
+                            tessellation: 18,
+                            subdivisions: 1
+                        },
+                        this.scene);
+                }
+                else {
+                    basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
+                        {
+                            diameterX: diam * 0.07, // * this.radius * 0.25,
+                            diameterY: diam * 0.07, // * this.radius * 0.25,
+                            diameterZ: diam * 0.07
+                        },
+                        this.scene);
+
+                }
+            }
+
             basisStateLineCap.isPickable = false;
             basisStateLineCap.parent = this.sphere;
             basisStateLineCap.position = lineEndpoint;
+            basisStateLineCap.rotation =
+                new BABYLON.Vector3(math.asin(zCoord),
+                    math.PI * 2 - angle,
+                    amplitude.toPolar().phi - (math.PI / 2));
+
+
+            //// Experiment with labeling the basis states
+            // const button = new BABYLON.GUI.Button3D("reset");
+            // this.gui3dManager.addControl(button);
+            // button.linkToTransformNode(basisStateLineCap);
+            // button.position.z = -0.0;
+            // button.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
+            // const text1 = new BABYLON.GUI.TextBlock();
+            // text1.text = stateIndex + "\n\n";
+            // text1.color = "white";
+            // text1.fontSize = 72;
+            // button.content = text1;
+
+
 
             // TODO: See if we can create only one material per color (instead of for every sphere)
             const mat = new BABYLON.StandardMaterial("mat", this.scene);
