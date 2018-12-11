@@ -192,9 +192,23 @@
             const stateVectorGroverMatrix5 = math.matrix(stateVectorGroverArray);
 
 
-            ////// 10 qubits
+            ////// 10 qubits equal superposition
+            const stateVector10qbEqArray = [];
+            let numBasisStates = 1024;
+
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStates; basisStateIdx++) {
+                if (basisStateIdx %2 == 0) {
+                    stateVector10qbEqArray.push(math.complex(0.03125, 0));
+                }
+                else {
+                    stateVector10qbEqArray.push(math.complex(-0.03125, 0));
+                }
+            }
+            const stateVectorMatrix10qbEq = math.matrix(stateVector10qbEqArray);
+
+            ////// 10 qubits measured
             const stateVectorMeasuredArray = [];
-            const numBasisStates = 1024;
+            numBasisStates = 1024;
 
             for (let basisStateIdx = 0; basisStateIdx < numBasisStates; basisStateIdx++) {
                 if (basisStateIdx == 42) {
@@ -205,6 +219,20 @@
                 }
             }
             const stateVectorMeasuredMatrix = math.matrix(stateVectorMeasuredArray);
+
+
+            ////// 6 qubits QFT
+            const stateVectorQftArray = [];
+            let numBasisStatesQft = 64;
+
+            for (let basisStateIdx = 0; basisStateIdx < numBasisStatesQft; basisStateIdx++) {
+                const ampRe = math.cos((math.PI * 2) * (basisStateIdx / numBasisStatesQft)) * (1 / math.sqrt(numBasisStatesQft));
+                const ampIm = math.sin((math.PI * 2) * (basisStateIdx / numBasisStatesQft)) * (1 / math.sqrt(numBasisStatesQft));
+                const amplitude = math.complex(ampRe, ampIm);
+                stateVectorQftArray.push(amplitude);
+            }
+            const stateVectorMatrixQft = math.matrix(stateVectorQftArray);
+
 
             qSphere = new QSphere("qSphere", scene, stateVectorBell);
 
@@ -272,14 +300,22 @@
                         break
                     case 8:
                         qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorMatrix10qbEq);
+                        break
+                    case 9:
+                        qSphere.sphere.dispose();
                         qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix);
+                        break
+                    case 10:
+                        qSphere.sphere.dispose();
+                        qSphere = new QSphere("qSphere", scene, stateVectorMatrixQft);
                         break
                 }
             }
 
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
-            selectBox.height = 0.43;
+            selectBox.height = 0.53;
             selectBox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             selectBox.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
@@ -294,7 +330,9 @@
             exampleGroup.addRadio("Grover: 3rd amp", setExample);
             exampleGroup.addRadio("Grover: 4th amp", setExample);
             exampleGroup.addRadio("Grover: measured", setExample);
+            exampleGroup.addRadio("Ten qb equal superpos", setExample);
             exampleGroup.addRadio("Ten qubits measured", setExample);
+            exampleGroup.addRadio("Seven qubits QFT", setExample);
 
             selectBox.addGroup(exampleGroup);
 

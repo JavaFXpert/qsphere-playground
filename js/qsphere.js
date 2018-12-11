@@ -122,8 +122,8 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.alpha = alphaVal;
 
             let diam = math.nthRoot((probability / ((math.PI * 4) / 3)), 3) * 2;
-            if (diam < 0.3) {
-                diam = 0.3;
+            if (diam < 0.15) {
+                diam = 0.15;
             }
             console.log("diam: " + diam);
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
