@@ -85,13 +85,6 @@ class QSphere extends BABYLON.Mesh {
 
         // Remove the global phase TODO: Implement
         let loc = math.max(math.abs(stateVector));
-        // let angles = (np.angle(state_vec[loc]) + 2 * Math.PI) % (2 * Math.PI)
-        // angleset = np.exp(-1j*angles)
-        // print(state_vec)
-        // # print(angles)
-        // state_vec = angleset*state_vec
-        // print(state_vec)
-        // state_vec.flatten()
 
         // console.log("numStates: " + numStates);
         for (let stateIndex = 0; stateIndex < numStates; stateIndex++) {
@@ -119,18 +112,25 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.parent = this.sphere;
 
             let alphaVal = 1;
-            if (probability < .00000001) {
+            if (probability < .000001) {
                 alphaVal = 0;
             }
             else {
-                alphaVal = probability * 0.85 + 0.15;
-                // alphaVal = probability * 1.0 + 0.0;
+                alphaVal = probability * 0.9 + 0.1;
             }
             if (alphaVal > 1.0) alphaVal = 1.0;
             basisStateLine.alpha = alphaVal;
 
+            let diam = math.nthRoot((probability / ((math.PI * 4) / 3)), 3) * 2;
+            if (diam < 0.3) {
+                diam = 0.3;
+            }
+            console.log("diam: " + diam);
             const basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
-                {diameterX: this.radius * 0.025, diameterY: this.radius * 0.025, diameterZ: this.radius * 0.025}, this.scene);
+            {diameterX: diam * 0.07, // * this.radius * 0.25,
+                diameterY: diam * 0.07, // * this.radius * 0.25,
+                diameterZ: diam * 0.07}, // * this.radius * 0.25},
+            this.scene);
             basisStateLineCap.isPickable = false;
             basisStateLineCap.parent = this.sphere;
             basisStateLineCap.position = lineEndpoint;
