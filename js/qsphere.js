@@ -18,7 +18,7 @@
     [] Use math.combinations(n, k) for binomial coefficient
  */
 class QSphere extends BABYLON.Mesh {
-    constructor(name, scene, quantumStateVector, endpointShapeType) {
+    constructor(name, scene, quantumStateVector, endpointShapeType, showBasisStates) {
         super(name, scene);
         this.quantumStateVector = quantumStateVector;
         this.radius = 1;
@@ -31,6 +31,7 @@ class QSphere extends BABYLON.Mesh {
             scene);
         this.latLineColor = new BABYLON.Color3(.3, .3, .3);
         this.endpointShapeType = endpointShapeType;
+        this.showBasisStates = showBasisStates;
         this.setupSphere();
     }
 
@@ -74,6 +75,18 @@ class QSphere extends BABYLON.Mesh {
         centerPoint.parent = this.sphere;
         centerPoint.position = new BABYLON.Vector3(0, 0, 0);
 
+    }
+
+    makeTextPlane(text, color, size) {
+        var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 75, this.scene, true);
+        dynamicTexture.hasAlpha = true;
+        dynamicTexture.drawText(text, (8 - text.length) * 6, 65, "bold 12px Arial", color, "transparent", true);
+        var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, this.scene, true);
+        plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", this.scene);
+        plane.material.backFaceCulling = false;
+        plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+        plane.material.diffuseTexture = dynamicTexture;
+        return plane;
     }
 
     updateAppearanceWithStateVector(stateVector) {
@@ -173,6 +186,18 @@ class QSphere extends BABYLON.Mesh {
                 new BABYLON.Vector3(math.asin(zCoord),
                     math.PI * 2 - angle,
                     amplitude.toPolar().phi - (math.PI / 2));
+
+            if (this.showBasisStates) {
+                const basisStateLabel = this.makeTextPlane(stateIndex.toString(2), "black", 0.2);
+                basisStateLabel.parent = basisStateLineCap;
+                // Un-rotate the text from the cap
+                //basisStateLabel.position = new BABYLON.Vector3(0.01, -0.03, 0.0);
+                basisStateLabel.rotation =
+                    new BABYLON.Vector3(0,
+                        0,
+                        math.PI - amplitude.toPolar().phi - (math.PI / 2));
+                basisStateLabel.isPickable = false;
+            }
 
 
             //// Experiment with labeling the basis states
