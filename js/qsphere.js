@@ -128,7 +128,7 @@ class QSphere extends BABYLON.Mesh {
             basisStateLine.parent = this.sphere;
 
             let alphaVal = 1;
-            if (probability < .000001) {
+            if (probability < .0000000000000001) {
                 alphaVal = 0;
             }
             else {
@@ -144,7 +144,7 @@ class QSphere extends BABYLON.Mesh {
 
             let basisStateLineCap = null;
 
-            if (probability < 0.000001) {
+            if (probability < 0.0000000000000001) {
                 // TODO: Make these black dots?
                 basisStateLineCap = BABYLON.MeshBuilder.CreateSphere("quantumStateLineCap",
                     {
@@ -200,23 +200,15 @@ class QSphere extends BABYLON.Mesh {
             }
 
 
-            //// Experiment with labeling the basis states
-            // const button = new BABYLON.GUI.Button3D("reset");
-            // this.gui3dManager.addControl(button);
-            // button.linkToTransformNode(basisStateLineCap);
-            // button.position.z = -0.0;
-            // button.scaling = new BABYLON.Vector3(0.15, 0.15, 0.15);
-            // const text1 = new BABYLON.GUI.TextBlock();
-            // text1.text = stateIndex + "\n\n";
-            // text1.color = "white";
-            // text1.fontSize = 72;
-            // button.content = text1;
-
-
 
             // TODO: See if we can create only one material per color (instead of for every sphere)
             const mat = new BABYLON.StandardMaterial("mat", this.scene);
-            mat.diffuseColor = Qutil.calcColorForPhase(amplitude);
+            if (probability < .0000000000000001) {
+                mat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+            }
+            else {
+                mat.diffuseColor = Qutil.calcColorForPhase(amplitude);
+            }
             basisStateLineCap.material = mat;
         }
 

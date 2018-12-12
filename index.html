@@ -389,7 +389,6 @@
             statevectorInputText.background = "gray";
 
             statevectorInputText.onTextPasteObservable.add(function(){
-                console.log("Pasted statevector: " + statevectorInputText.text);
                 let txt = statevectorInputText.text;
                 statevectorInputText.text = "** Pasted **";
                 setTimeout(() => { statevectorInputText.text = ""}, 1500);
