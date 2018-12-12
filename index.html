@@ -345,7 +345,13 @@
             const strToComplexNum = function(complexStr) {
                 // Delineation between real and imaginary parts is first sign (+/-) that isn't at the start of the string
                 let minusSignPosition = complexStr.indexOf('-', 1);
+                if (complexStr.charAt(minusSignPosition - 1) ==='e') {
+                    minusSignPosition = complexStr.indexOf('-', minusSignPosition + 1);
+                }
                 let plusSignPosition = complexStr.indexOf('+', 1);
+                if (complexStr.charAt(plusSignPosition - 1) === 'e') {
+                    plusSignPosition = complexStr.indexOf('+', plusSignPosition + 1);
+                }
                 let imaginaryPositive = true;
                 if (minusSignPosition > 0) {
                     if (plusSignPosition < 0 || minusSignPosition < plusSignPosition) {
