@@ -325,19 +325,109 @@
                         qSphere = new QSphere("qSphere", scene, stateVectorMeasuredMatrix, thisEndpointShapeType, thisShowBasisStates);
                         break
                 }
-            }
+            };
 
             const setEndpointShapeType = function(endpointShapeType) {
                 thisEndpointShapeType = endpointShapeType;
                 qSphere.sphere.dispose();
                 qSphere = new QSphere("qSphere", scene, thisCurrentVector, thisEndpointShapeType, thisShowBasisStates);
-            }
+            };
 
             const setShowBasisStates = function(showBasisStates) {
                 thisShowBasisStates = showBasisStates;
                 qSphere.sphere.dispose();
                 qSphere = new QSphere("qSphere", scene, thisCurrentVector, thisEndpointShapeType, thisShowBasisStates);
-            }
+            };
+
+
+            /////// User may paste a statevector into a text box and it will render on the Q-sphere
+            //
+            const strToComplexNum = function(complexStr) {
+                // Delineation between real and imaginary parts is first sign (+/-) that isn't at the start of the string
+                let minusSignPosition = complexStr.indexOf('-', 1);
+                let plusSignPosition = complexStr.indexOf('+', 1);
+                let imaginaryPositive = true;
+                if (minusSignPosition > 0) {
+                    if (plusSignPosition < 0 || minusSignPosition < plusSignPosition) {
+                        imaginaryPositive = false;
+                    }
+                }
+
+                let realPartStr = "";
+                let imagPartStr = "";
+
+                if (imaginaryPositive) {
+                    // There should be a plus sign in the string
+                    realPartStr = complexStr.substring(0, plusSignPosition);
+                    imagPartStr = complexStr.substring(plusSignPosition);
+                }
+                else {
+                    // There should be a minus sign in the string
+                    realPartStr = complexStr.substring(0, minusSignPosition);
+                    imagPartStr = complexStr.substring(minusSignPosition);
+                }
+                if (imagPartStr.endsWith('j')) {
+                    imagPartStr = imagPartStr.substring(0, imagPartStr.indexOf('j'));
+                }
+                return math.complex(Number(realPartStr), Number(imagPartStr));
+            };
+
+            const statevectorInputText = new BABYLON.GUI.InputText();
+            statevectorInputText.width = 0.25;
+            statevectorInputText.maxWidth = 0.25;
+            statevectorInputText.height = "40px";
+            statevectorInputText.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            statevectorInputText.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            statevectorInputText.text = "";
+            statevectorInputText.color = "white";
+            statevectorInputText.background = "gray";
+
+            statevectorInputText.onTextPasteObservable.add(function(){
+                console.log("Pasted statevector: " + statevectorInputText.text);
+                let txt = statevectorInputText.text;
+                statevectorInputText.text = "** Pasted **";
+                setTimeout(() => { statevectorInputText.text = ""}, 1500);
+
+                let tempStateStrArray = [];
+                let pos = 0;
+
+                // Remove everything up to and including the final '[' (but there should only be one)
+                pos = txt.lastIndexOf('[');
+                if (pos >= 0 && txt.length > pos + 1) {
+                    txt = txt.substring(pos + 1);
+                }
+
+                // Remove everything including and after the first ']' (but there should only be one)
+                pos = txt.indexOf(']');
+                if (pos >= 0) {
+                    txt = txt.substring(0, pos);
+                }
+
+                // Remove all spaces
+                txt = txt.replace(/\s/g, '');
+
+                // Populate tempStateStrArray
+                tempStateStrArray = txt.split(',');
+
+                // Populate tempStateComplexArray complex numbers
+                let tempStateComplexArray = [];
+                for (let idx = 0; idx < tempStateStrArray.length; idx++) {
+                    const complexNumStr = tempStateStrArray[idx];
+                    tempStateComplexArray.push(strToComplexNum(complexNumStr));
+                }
+
+                const stateVectorComplexMatrix = math.matrix(tempStateComplexArray);
+
+                qSphere.sphere.dispose();
+                thisCurrentVector = stateVectorComplexMatrix;
+                qSphere = new QSphere("qSphere", scene, stateVectorComplexMatrix, thisEndpointShapeType, thisShowBasisStates);
+            });
+
+
+            advancedTexture.addControl(statevectorInputText);
+
+
+
 
             const selectBox = new BABYLON.GUI.SelectionPanel("sp");
             selectBox.width = 0.25;
